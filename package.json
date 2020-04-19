@@ -1,0 +1,25 @@
+{
+  "name": "jeremy-wischusen-blavity",
+  "version": "1.0.0",
+  "description": "Blavity Coding Challenge",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "nodemon main.js"
+  },
+  "keywords": [
+    "news"
+  ],
+  "author": "Jeremy Wischusen",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongodb": "^3.5.6",
+    "newsapi": "^2.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.3"
+  }
+}
