@@ -19,7 +19,7 @@ npm start
 ```         
 The main site page should then load at http://localhost:3000/
 
-###What you can do
+### What you can do
 When the page loads, a list of articles will display. If you have saved favorites, these will display in a separate section on the right.  
 * Click on a link to open the article in a new window. 
 * Click the heart icon to save an article. These will display in the saved articles section (only shows if you have at least one saved article). 
