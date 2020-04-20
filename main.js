@@ -7,10 +7,10 @@ const app = express();
 const bodyParser = require('body-parser');
 const NewsAPI = require('newsapi');
 const newsapi = new NewsAPI(process.env.NEWS_API_KEY);
-const mongo = require('mongodb');
-const client = mongo.MongoClient(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+const {Pool} = require('pg');
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: true
 });
 app.use(express.static('public'));
 app.use(bodyParser.json());
@@ -26,53 +26,75 @@ app.get('/articles/', (req, res) => {
         res.send(response.articles);
     });
 });
-app.get('/articles/saved', (req, res) => {
+app.get('/articles/saved', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
-    client.connect((e, r) => {
-        if (e) {
-            console.error(e);
-        } else {
-            client.db('blavity').collection("savedArticles").find().toArray((e, r) => {
-                if (e) {
-                    res.send(e.message);
-                } else {
-                    res.send(r);
-                }
-            });
-        }
-    });
-});
-app.post('/articles/saved', (req, res) => {
-    client.connect((e, r) => {
-        if (e) {
-            console.error(e);
-        } else {
-            client.db('blavity').collection("savedArticles").insertOne(req.body, (e, r) => {
-                if (e) {
-                    res.send(e.message);
-                } else {
-                    res.setHeader('Content-Type', 'application/json');
-                    res.send(r);
-                }
-            });
-        }
-    });
-});
-app.delete('/articles/saved/:id', (req, res) => {
-    client.connect((e, r) => {
-        if (e) {
-            console.error(e);
-        } else {
-            client.db('blavity').collection("savedArticles").deleteOne({_id: new mongo.ObjectId(req.params.id)},
-                (e, r) => {
-                    if (e) {
-                        res.send(e.message);
-                    } else {
-                        res.setHeader('Content-Type', 'application/json');
-                        res.send(r);
+    try {
+        const client = await pool.connect();
+        await client.query("SELECT ID, TITLE, URL, IMAGE_URL FROM SAVED_ARTICLES", (e, r) => {
+            if (e) {
+                client.end();
+                res.send(JSON.stringify(e));
+            } else {
+                let articles = [];
+                if (r.rowCount > 0) {
+                    let rows = r.rows;
+                    for (let i in rows) {
+                        let a = rows[i];
+                        articles.push({
+                            "id": a.id,
+                            "title": a.title,
+                            "url": a.url,
+                            "urlToImage": a.image_url
+                        });
                     }
-                });
-        }
-    });
+                }
+                client.end();
+                res.send(articles);
+            }
+        });
+    } catch (e) {
+        client.end();
+        res.send(JSON.stringify(e));
+    }
+});
+app.post('/articles/saved', async (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    try {
+        let article = req.body;
+        const client = await pool.connect();
+        await client.query("INSERT INTO SAVED_ARTICLES(TITLE, URL,IMAGE_URL) VALUES($1,$2,$3)", [
+            article.title,
+            article.url,
+            article.urlToImage || ''
+        ], (e, r) => {
+            if (e) {
+                res.send(JSON.stringify(e));
+            } else {
+                res.send({"added": r.rowCount});
+            }
+            client.end();
+        });
+    } catch (e) {
+        client.end();
+        res.send(JSON.stringify(e));
+    }
+});
+app.delete('/articles/saved/:id', async (req, res) => {
+    try {
+        const client = await pool.connect();
+        await client.query("DELETE FROM SAVED_ARTICLES WHERE ID =$1", [
+            req.params.id
+        ], (e, r) => {
+            if (e) {
+                res.send(JSON.stringify(e));
+            } else {
+                res.send({"deleted": r.rowCount});
+            }
+            client.end();
+        });
+    } catch (e) {
+        client.end();
+        res.send(JSON.stringify(e));
+    }
 });
 app.listen(port, () => console.log(`Server is listening on port ${port}!`));

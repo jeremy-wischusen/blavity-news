@@ -160,7 +160,7 @@
                 },
                 deleteSavedArticle(article) {
                     console.log("Deleting: ", article.title, '.');
-                    axios.delete(`/articles/saved/${article._id}`).then((response) => {
+                    axios.delete(`/articles/saved/${article.id}`).then((response) => {
                         if (response.status === 200) {
                             console.log("Delete article response: ", response);
                             this.loadSaved();
