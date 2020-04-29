@@ -8,9 +8,9 @@
 * axios - For making ajax calls from the front end UI to REST endpoints.  
 
 ## Approach
-Since this is a simple application, I am using the same node server for both the front end and back end. The / route sends back a static HTML page that includes the Vue, Vuetify and axios scripts as well as some icon libraries via CDN networks. The frontend uses axios to make ajax calls to load and save data.  
+Since this is a simple application, I am using the same node server for both the front end and back end. The / route sends back a static HTML page that includes the Vue, Vuetify and axios scripts as well as some icon libraries via CDN networks. The frontend uses axios to make ajax calls to load and save data. In this version, the database is browser based using IndexedDB.   
 
-On the backend, node and express are used to access the https://newsapi.org/ and MongoDB database. The REST API for articles allows you to save, load and delete articles to/from the MongoDB. I know only save was required, but it was not that much more work to include the other functionality, so I did so. 
+On the backend, node and express are used to access the https://newsapi.org/.
 
 ## Running the App
 Open a terminal and cd to the root project directory and run:
