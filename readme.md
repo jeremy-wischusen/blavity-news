@@ -2,7 +2,7 @@
 
 ## Choice of Technologies
 * NodeJS - Chosen since it is ubiquitous and if you want to actually run this, should be simple for you to do so. It is also easy to install packages for connecting to MongoDB and other databases. 
-* MongoDB - I have cluster running on https://cloud.mongodb.com/ that I have been wanting to play with, so this seemed like a good opportunity. I have opened up public access to it and created a user specifically for this app, so you should be able to connect if you run this. 
+* IndexedDB - Wanted to see what working with this was like. 
 * VueJS - Compared to React or Angular, this is lighter weight and has a better and faster virtual dom model.  
 * VuetifyJS - Lots of nice prebuilt UI components. Makes building the UI faster and handles reactive layout for you.
 * axios - For making ajax calls from the front end UI to REST endpoints.  
