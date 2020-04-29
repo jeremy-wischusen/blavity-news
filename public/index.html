@@ -104,7 +104,9 @@
             </v-row>
         </div>
     </script>
+    <script src="IndexedDB.js"></script>
     <script>
+        Vue.prototype.$db = new IndexedDB('savedArticles', 1);
         var ArticleList = {
             name: 'ArticleList',
             props: ['articles'],
@@ -138,35 +140,19 @@
                     });
                 },
                 loadSaved() {
-                    axios.get('/articles/saved').then((response) => {
-                        if (response.status === 200) {
-                            this.savedArticles = response.data;
-                            console.log('Saved articles: ', this.savedArticles);
-                        } else {
-                            console.error(response);
-                        }
+                    this.$db.getAll().then((data) => {
+                        this.savedArticles = data;
                     });
                 },
                 saveArticle(article) {
-                    console.log("Saving: ", article.title);
-                    axios.post('/articles/saved/', article).then((response) => {
-                        if (response.status === 200) {
-                            console.log("Save article response: ", response);
-                            this.loadSaved();
-                        } else {
-                            connsole.error(response);
-                        }
+                    this.$db.save(article).then(() => {
+                        this.loadSaved();
                     });
                 },
                 deleteSavedArticle(article) {
                     console.log("Deleting: ", article.title, '.');
-                    axios.delete(`/articles/saved/${article._id}`).then((response) => {
-                        if (response.status === 200) {
-                            console.log("Delete article response: ", response);
-                            this.loadSaved();
-                        } else {
-                            connsole.error(response);
-                        }
+                    this.$db.delete(article.id).then(() => {
+                        this.loadSaved();
                     });
                 }
             },
